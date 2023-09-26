@@ -1,0 +1,18 @@
+server:
+  port: 80
+spring:
+  servlet:
+    multipart:
+      location: /data/tmp
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+file-save-path: D:\\bms\\whisper\\upload\\
+#file-save-path: /opt/whisper/upload/
+#whisper-output-path: /opt/whisper/output/
+#模型选择  tiny base  small medium  large
+whisper:
+  model: small
+  language: Chinese
+  output-dir: D:\\bms\\whisper\\output\\
+  output_format: srt
