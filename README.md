@@ -71,7 +71,7 @@ pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https
 
 
 #win10 
-#英伟达显卡安装cdna
+#英伟达显卡安装cuda
 https://www.ngui.cc/el/3180290.html?action=onClick
 
 #cuda安装教程
