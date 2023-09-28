@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * description:
@@ -28,36 +30,38 @@ public class WhisperService {
 
     public ResponseEntity<String> transcription(File localFile) {
         String inputPath = localFile.toString().replace("\\", "\\\\");
-        log.info("ÎÄ¼şÂ·¾¶£ºlocalFile=>{}", inputPath);
-        log.info("ÎÄ¼ş¾ø¶ÔÂ·¾¶£ºlocalFile=>{}", localFile.getAbsolutePath());
-        log.info("Êä³öÂ·¾¶£ºoutputPath=>{}", outputDir);
+        log.info("æ–‡ä»¶è·¯å¾„ï¼šlocalFile=>{}", inputPath);
+        log.info("æ–‡ä»¶ç»å¯¹è·¯å¾„ï¼šlocalFile=>{}", localFile.getAbsolutePath());
+        log.info("è¾“å‡ºè·¯å¾„ï¼šoutputPath=>{}", outputDir);
         StringBuilder transcription = new StringBuilder();
-        transcription.append("½âÎö½á¹û:\n");
+        transcription.append("è§£æç»“æœ:\n");
         try {
             Process process = getProcess(inputPath);
-            // ´¦ÀíWhisperµÄÊä³ö
+            // å¤„ç†Whisperçš„è¾“å‡º
             InputStream inputStream = process.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "GBK"));
             String line;
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+                //è½¬utf-8è¾“å‡º
+               /* String str = new String(line.getBytes(),StandardCharsets.UTF_8);
+                System.out.println(str);*/
                 transcription.append(line).append("\n");
             }
-            // µÈ´ıWhisper½ø³ÌÍê³É
+            // ç­‰å¾…Whisperè¿›ç¨‹å®Œæˆ
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                // ×ªÂ¼³É¹¦£¬transcription°üº¬ÖĞÎÄ×ÖÄ»
-                log.info("×ªÂ¼³É¹¦£¡");
+                // è½¬å½•æˆåŠŸï¼ŒtranscriptionåŒ…å«ä¸­æ–‡å­—å¹•
+                log.info("è½¬å½•æˆåŠŸï¼");
             } else {
-                // ×ªÂ¼Ê§°Ü
-                return ResponseEntity.ok("×ªÂ¼Ê§°Ü£¡");
+                // è½¬å½•å¤±è´¥
+                return ResponseEntity.ok("è½¬å½•å¤±è´¥ï¼");
             }
         } catch (IOException e) {
            log.error(e.getMessage());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        // ´¦ÀíWhisperµÄÊä³ö²¢·µ»Ø×ÖÄ»ÎÄ¼ş
+        // å¤„ç†Whisperçš„è¾“å‡ºå¹¶è¿”å›å­—å¹•æ–‡ä»¶
         return ResponseEntity.ok(transcription.toString());
     }
 

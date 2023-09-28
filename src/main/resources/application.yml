@@ -1,11 +1,26 @@
 server:
   port: 80
+  tomcat:
+    uri-encoding: UTF-8  #编码格式
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
 spring:
   servlet:
     multipart:
       location: /data/tmp
       max-file-size: 100MB
       max-request-size: 100MB
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+minio:
+  endpoint: http://hadoop:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucketName: mp3
 
 file-save-path: D:\\bms\\whisper\\upload\\
 #file-save-path: /opt/whisper/upload/
