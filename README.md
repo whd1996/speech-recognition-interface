@@ -161,5 +161,5 @@ make install
 ##### 使用说明
 
 ```
-https://blog.csdn.net/qq_43907505/article/details/130590052
+whisper -h 有参数说明
 ```

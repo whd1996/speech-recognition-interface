@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@Api(tags = "minio鏂囦欢绠＄悊")
+@Api(tags = "minio文件管理")
 @Slf4j
 @RequestMapping("/minio")
 public class MinioController {
@@ -37,7 +37,7 @@ public class MinioController {
     @Autowired
     private WhisperService whisperService;
     @PostMapping("/upload")
-    @ApiImplicitParam(name = "file", value = "鏂囦欢涓婁紶", required = true, dataTypeClass = MultipartFile.class, allowMultiple = true, paramType = "query")
+    @ApiImplicitParam(name = "file", value = "文件上传", required = true, dataTypeClass = MultipartFile.class, allowMultiple = true, paramType = "query")
     public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
         minioUtilS.existBucket(bucketName);
         List<String> upload = minioUtilS.upload(new MultipartFile[]{file});

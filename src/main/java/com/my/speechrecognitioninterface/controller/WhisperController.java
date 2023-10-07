@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * éŸ³é¢‘è½¬æ–‡å­—
+ * ÒôÆµ×ªÎÄ×Ö
  */
 @RestController
 @RequestMapping("/api")
@@ -33,7 +33,7 @@ public class WhisperController {
 
     @PostMapping("/uploadToTranscription")
     public ResponseEntity<String> uploadAudioFile(@RequestParam("file") MultipartFile uploadFile) {
-        // åœ¨è¿™é‡Œå¤„ç†ä¸Šä¼ éŸ³é¢‘æ–‡ä»¶çš„é€»è¾‘
+        // ÔÚÕâÀï´¦ÀíÉÏ´«ÒôÆµÎÄ¼şµÄÂß¼­
         String dateTime = new DateTime().toString("yyyy-MM-dd");
         File folder = new File(fileSavePath + dateTime);
         if (folder.isDirectory() && !folder.exists()) {
@@ -41,13 +41,13 @@ public class WhisperController {
         }
         String fileName = uploadFile.getOriginalFilename();
         File localFile = new File(folder, fileName);
-        //uploadFile.transferTo(file);//jettyæœåŠ¡å™¨çš„é—®é¢˜ è¿™ä¸ªæ–¹æ³•ä¸èƒ½ç”¨
+        //uploadFile.transferTo(file);//jetty·şÎñÆ÷µÄÎÊÌâ Õâ¸ö·½·¨²»ÄÜÓÃ
         try {
             FileUtil.writeBytes(uploadFile.getBytes(), localFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        // å¤„ç†Whisperçš„è¾“å‡ºå¹¶è¿”å›å­—å¹•æ–‡ä»¶
+        // ´¦ÀíWhisperµÄÊä³ö²¢·µ»Ø×ÖÄ»ÎÄ¼ş
         return whisperService.transcription(localFile);
     }
 }

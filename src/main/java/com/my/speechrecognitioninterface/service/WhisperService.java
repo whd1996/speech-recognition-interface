@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * description:
@@ -29,45 +30,54 @@ public class WhisperService {
     private String outputFormat;
 
     public ResponseEntity<String> transcription(File localFile) {
-        String inputPath = localFile.toString().replace("\\", "\\\\");
-        log.info("æ–‡ä»¶è·¯å¾„ï¼šlocalFile=>{}", inputPath);
-        log.info("æ–‡ä»¶ç»å¯¹è·¯å¾„ï¼šlocalFile=>{}", localFile.getAbsolutePath());
-        log.info("è¾“å‡ºè·¯å¾„ï¼šoutputPath=>{}", outputDir);
-        StringBuilder transcription = new StringBuilder();
-        transcription.append("è§£æç»“æœ:\n");
+        StringBuilder result = new StringBuilder();
         try {
+            String inputPath = localFile.toString().replace("\\", "\\\\");
+            log.info("ÎÄ¼şÂ·¾¶£ºlocalFile=>{}", inputPath);
+            log.info("ÎÄ¼ş¾ø¶ÔÂ·¾¶£ºlocalFile=>{}", localFile.getAbsolutePath());
+            log.info("Êä³öÂ·¾¶£ºoutputPath=>{}", outputDir);
+            long start = System.currentTimeMillis();
             Process process = getProcess(inputPath);
-            // å¤„ç†Whisperçš„è¾“å‡º
+            // ´¦ÀíWhisperµÄÊä³ö
             InputStream inputStream = process.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "GBK"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = reader.readLine()) != null) {
-                //è½¬utf-8è¾“å‡º
-               /* String str = new String(line.getBytes(),StandardCharsets.UTF_8);
-                System.out.println(str);*/
-                transcription.append(line).append("\n");
+                //×ªutf-8Êä³ö
+                String str = new String(line.getBytes(), StandardCharsets.UTF_8);
+                System.out.println(str);
             }
-            // ç­‰å¾…Whisperè¿›ç¨‹å®Œæˆ
+            // µÈ´ıWhisper½ø³ÌÍê³É
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                // è½¬å½•æˆåŠŸï¼ŒtranscriptionåŒ…å«ä¸­æ–‡å­—å¹•
-                log.info("è½¬å½•æˆåŠŸï¼");
+                // ×ªÂ¼³É¹¦£¬transcription°üº¬ÖĞÎÄ×ÖÄ»
+                long time = System.currentTimeMillis() - start;
+                System.out.println("ºÄÊ±: " + time + "ms");
+                log.info("×ªÂ¼³É¹¦£¡");
+                String[] split = localFile.getName().split("\\.");
+                reader = new BufferedReader(new FileReader(outputDir+split[0]+"."+outputFormat));
+               /* result.append("½âÎö½á¹û:\n");*/
+                while ((line = reader.readLine()) != null) {
+                    result.append(line).append("\n");
+                }
+                System.out.println(result);
             } else {
-                // è½¬å½•å¤±è´¥
-                return ResponseEntity.ok("è½¬å½•å¤±è´¥ï¼");
+                // ×ªÂ¼Ê§°Ü
+                return ResponseEntity.ok("×ªÂ¼Ê§°Ü£¡");
             }
         } catch (IOException e) {
-           log.error(e.getMessage());
+            log.error(e.getMessage());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        // å¤„ç†Whisperçš„è¾“å‡ºå¹¶è¿”å›å­—å¹•æ–‡ä»¶
-        return ResponseEntity.ok(transcription.toString());
+
+        // ´¦ÀíWhisperµÄÊä³ö²¢·µ»Ø×ÖÄ»ÎÄ¼ş
+        return ResponseEntity.ok(result.toString());
     }
 
     private Process getProcess(String inputPath) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder("whisper", inputPath,
-                "--output_format",outputFormat ,
+                "--output_format", outputFormat,
                 "--output_dir", outputDir,
                 "--model", model,
                 "--language", language)
